@@ -1,4 +1,4 @@
-import { chat, chatJSON } from './llm.js';
+import { chatJSON, chatStream } from './llm.js';
 import type { KeywordMatch } from './skills.js';
 
 export interface Gap {
@@ -100,6 +100,8 @@ export async function writeCoverLetter(
   job: string,
   tone: Tone,
   extra: { candidateName?: string; company?: string; notes?: string } = {},
+  onToken: (text: string) => void = () => {},
+  signal?: AbortSignal,
 ): Promise<string> {
   const system = `You write tailored cover letters for software engineers.
 Rules:
@@ -120,12 +122,44 @@ Return only the letter.`;
     .filter(Boolean)
     .join('\n');
 
-  const letter = await chat(
+  const letter = await chatStream(
     [
       { role: 'system', content: system },
       { role: 'user', content: `JOB DESCRIPTION:\n${job}\n\nRESUME:\n${resume}${notes ? `\n\n${notes}` : ''}` },
     ],
-    { temperature: 0.6, maxTokens: 900 },
+    onToken,
+    { temperature: 0.6, maxTokens: 900, signal },
   );
   return letter.replace(/^```\w*\n?|```$/g, '').trim();
+}
+
+export interface BulletRewrite {
+  rewrites: string[];
+  tip: string;
+}
+
+/** Rewrites one resume bullet three ways, without inventing facts. */
+export async function rewriteBullet(bullet: string, job: string): Promise<BulletRewrite> {
+  const raw = await chatJSON<Partial<BulletRewrite>>(
+    [
+      {
+        role: 'system',
+        content: `You improve a single resume bullet for a software engineer.
+Rules:
+- Start with a strong past-tense action verb (Built, Led, Cut, Shipped...).
+- Show impact: what changed, for whom, how much. Keep every fact and number from the original.
+- NEVER invent numbers, tools or results. If a number would help but isn't given, insert a placeholder like [X%] or [N users] for the candidate to fill in.
+- One line each, under 30 words. No first person.
+- If a job description is given, use its wording where it truthfully fits.
+Return JSON: {"rewrites": ["...", "...", "..."], "tip": "one short sentence of advice"}`,
+      },
+      { role: 'user', content: `Bullet: ${bullet}${job ? `\n\nJob description (for wording):\n${job.slice(0, 3000)}` : ''}` },
+    ],
+    { temperature: 0.5 },
+  );
+  const rewrites = Array.isArray(raw.rewrites)
+    ? raw.rewrites.filter((r): r is string => typeof r === 'string' && r.trim().length > 0).map((r) => r.trim().replace(/^[-•*]\s*/, '')).slice(0, 3)
+    : [];
+  if (rewrites.length === 0) throw new Error('The model did not return any rewrites. Try again.');
+  return { rewrites, tip: typeof raw.tip === 'string' ? raw.tip.trim() : '' };
 }

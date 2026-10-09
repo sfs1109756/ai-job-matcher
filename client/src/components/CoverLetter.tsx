@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { postJSON } from '../api';
+import { streamPost } from '../api';
 
 interface Props {
   resume: string;
@@ -20,8 +20,10 @@ export function CoverLetter({ resume, job, aiReady }: Props) {
     setBusy(true);
     setError('');
     try {
-      const res = await postJSON<{ letter: string }>('/api/cover-letter', { resume, job, tone, company, notes });
-      setLetter(res.letter);
+      setLetter('');
+      // Tokens arrive as the model writes, so the letter appears progressively.
+      const done = await streamPost('/api/cover-letter', { resume, job, tone, company, notes }, setLetter);
+      setLetter(done.text);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -73,7 +75,7 @@ export function CoverLetter({ resume, job, aiReady }: Props) {
             className="letter"
             value={letter}
             onChange={(e) => setLetter(e.target.value)}
-            rows={Math.max(14, Math.ceil(letter.length / 95) + letter.split("\n").length)}
+            rows={Math.max(12, Math.ceil(letter.length / 140) + letter.split("\n").length)}
           />
           <div className="row" style={{ marginTop: 8 }}>
             <button className="ghost" onClick={copy}>{copied ? 'Copied ✓' : 'Copy'}</button>

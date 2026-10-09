@@ -11,6 +11,7 @@ Senior Frontend Engineer — Brightgrid Systems (2021–present)
 - Built the React + TypeScript dashboard with real-time charts over WebSockets; cut page load time by 45%.
 - Built a React Native app that provisions ESP32 devices over BLE and NFC.
 - Designed REST APIs in Node.js/Express and PostgreSQL for device telemetry.
+- Responsible for code reviews and helping new developers get started.
 
 Web Developer — Pixelcraft Studio (2016–2021)
 - Delivered 80+ WordPress and WooCommerce sites for US and UK clients.

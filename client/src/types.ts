@@ -28,8 +28,23 @@ export interface AiAnalysis {
   interviewQuestions: string[];
 }
 
+export interface AtsCheck {
+  id: string;
+  label: string;
+  status: 'pass' | 'warn' | 'fail';
+  detail: string;
+}
+
+export interface AtsReport {
+  score: number;
+  checks: AtsCheck[];
+  stats: { words: number; bullets: number; quantifiedBullets: number };
+  weakBullets: string[];
+}
+
 export interface AnalyzeResponse {
   keywords: KeywordMatch;
+  ats: AtsReport;
   ai: AiAnalysis | null;
   aiError: string | null;
 }

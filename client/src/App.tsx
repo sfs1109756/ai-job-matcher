@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { postJSON } from './api';
 import { AiNotice, AiStatus, useHealth } from './components/AiStatus';
+import { AtsCard } from './components/AtsCard';
+import { BulletRewriter } from './components/BulletRewriter';
 import { CoverLetter } from './components/CoverLetter';
 import { Results } from './components/Results';
 import { TextInput } from './components/TextInput';
+import { clearHistory, loadHistory, saveToHistory, type HistoryItem } from './history';
 import { SAMPLE_JOB, SAMPLE_RESUME } from './samples';
 import type { AnalyzeResponse } from './types';
 
@@ -22,6 +25,7 @@ export default function App() {
   const [result, setResult] = useState<AnalyzeResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [history, setHistory] = useState<HistoryItem[]>(loadHistory);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // Remember the resume between visits (stays in this browser only).
@@ -39,12 +43,20 @@ export default function App() {
     try {
       const data = await postJSON<AnalyzeResponse>('/api/analyze', { resume, job, useAi: health?.ok !== false });
       setResult(data);
+      setHistory(saveToHistory(resume, job, data));
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setBusy(false);
     }
+  }
+
+  function restore(h: HistoryItem) {
+    setResume(h.resume);
+    setJob(h.job);
+    setResult(h.result);
+    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   }
 
   function loadSample() {
@@ -68,6 +80,26 @@ export default function App() {
 
       <AiNotice health={health} />
 
+      {history.length > 0 && (
+        <div className="history">
+          <span className="small muted">Recent:</span>
+          {history.map((h) => (
+            <button key={h.id} className="chip btn" onClick={() => restore(h)} title={new Date(h.at).toLocaleString()}>
+              <span className={`hscore ${h.score >= 65 ? 'good' : h.score >= 45 ? 'mid' : 'low'}`}>{h.score}</span> {h.title}
+            </button>
+          ))}
+          <button
+            className="link small"
+            onClick={() => {
+              clearHistory();
+              setHistory([]);
+            }}
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
       <div className="grid2">
         <TextInput title="Your resume" value={resume} onChange={setResume} placeholder="Paste your resume, or upload a PDF…" />
         <TextInput title="Job description" value={job} onChange={setJob} placeholder="Paste the job post…" />
@@ -85,6 +117,12 @@ export default function App() {
       {result && (
         <div ref={resultsRef} className="stack" style={{ marginTop: 20 }}>
           <Results data={result} />
+          {result.ats && (
+            <div className="grid2">
+              <AtsCard ats={result.ats} />
+              <BulletRewriter key={resume} suggestions={result.ats.weakBullets} job={job} aiReady={Boolean(health?.ok)} />
+            </div>
+          )}
           <CoverLetter resume={resume} job={job} aiReady={Boolean(health?.ok)} />
         </div>
       )}
