@@ -6,14 +6,23 @@ Paste (or upload) your resume and a job description. Get a fit score, the skills
 
 ![CI](https://github.com/sfs1109756/ai-job-matcher/actions/workflows/ci.yml/badge.svg)
 
+![Fit score, matched and missing skills](docs/screenshot-match.png)
+
 ## Features
 
 - **Rule-based skill match (no AI):** 150+ skills with aliases (`ReactJS` → React, `k8s` → Kubernetes, `C#`, `.NET`, `Node.js`…), grouped by category, plus years-of-experience detection.
 - **AI fit analysis:** fit score and verdict, strengths, gaps marked *must-have* / *nice-to-have* with how to close each, resume edits for this specific job, and interview prep questions.
-- **Cover letter writer:** three tones, optional company name and notes ("open to relocating"), and a strict rule to only use facts from your resume.
+- **Resume health check (no AI):** a score plus seven checks — contact details, length, standard sections, measurable impact, action verbs, first-person voice and job keywords.
+- **Strengthen a bullet:** picks your weakest bullets (weak openers, no numbers) and rewrites one three ways. Missing numbers become placeholders like `[X%]` instead of invented facts.
+- **Cover letter writer:** streams as it's written; three tones, optional company name and notes ("open to relocating"), and a strict rule to only use facts from your resume.
+- **History:** your last 10 analyses are kept in the browser; one click restores any of them.
 - **PDF upload** for resumes and job posts (text extraction with `unpdf`).
 - Remembers your resume in the browser between visits.
 - Works with **Ollama, any OpenAI-compatible API, or Claude** by changing one environment variable.
+
+![Resume health check and bullet rewriter](docs/screenshot-resume-check.png)
+
+<sub>Screenshots use the built-in sample resume and job.</sub>
 
 ## How it works
 
@@ -75,18 +84,24 @@ All providers go through one small adapter (`server/src/llm.ts`) that uses plain
 |---|---|---|---|
 | `GET` | `/api/health` | – | Which model is active and whether it's reachable |
 | `POST` | `/api/extract` | `multipart file` | PDF/TXT/MD → text |
-| `POST` | `/api/analyze` | `{ resume, job, useAi? }` | `{ keywords, ai, aiError }` |
-| `POST` | `/api/cover-letter` | `{ resume, job, tone, company?, notes? }` | `{ letter }` |
+| `POST` | `/api/analyze` | `{ resume, job, useAi? }` | `{ keywords, ats, ai, aiError }` |
+| `POST` | `/api/cover-letter` | `{ resume, job, tone, company?, notes? }` | NDJSON stream of `token` events, then `done` |
+| `POST` | `/api/rewrite-bullet` | `{ bullet, job? }` | `{ rewrites[3], tip }` |
+
+AI routes are rate limited (`AI_RATE_LIMIT`, default 30/min per IP). If no model is available they return `503` with `aiUnavailable: true`, so the UI can fall back gracefully.
 
 ## Project structure
 
 ```
 server/src
-  index.ts      routes
-  skills.ts     skill catalogue + deterministic matcher (+ tests)
-  analyze.ts    AI analysis and cover letter prompts, output validation
+  app.ts        routes            index.ts   starts the server
+  skills.ts     skill catalogue + deterministic matcher
+  ats.ts        rule-based resume checks
+  analyze.ts    AI analysis, cover letter and bullet prompts, output validation
+  stream.ts     NDJSON token streaming to the browser
   extract.ts    PDF/text extraction
-  llm.ts        provider-agnostic LLM client
+  llm.ts        provider-agnostic LLM client (chat, streaming, retries)
+  *.test.ts     unit + end-to-end API tests (fake model server)
 client/src
   App.tsx, components/   React UI (Vite)
 ```
