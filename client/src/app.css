@@ -14,5 +14,5 @@ ul.gaps li { margin-bottom: 12px; }
 ul.gaps .chip { margin: 0 0 0 6px; font-size: 11px; padding: 1px 8px; }
 .cl-form { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; }
 @media (max-width: 640px) { .cl-form { grid-template-columns: 1fr; } }
-textarea.letter { margin-top: 14px; min-height: 360px; font-family: Georgia, 'Times New Roman', serif; font-size: 15px; line-height: 1.6; background: var(--panel); }
+textarea.letter { margin-top: 14px; min-height: 360px; height: auto; font-family: Georgia, 'Times New Roman', serif; font-size: 15px; line-height: 1.6; background: var(--panel); }
 footer { margin-top: 40px; text-align: center; }

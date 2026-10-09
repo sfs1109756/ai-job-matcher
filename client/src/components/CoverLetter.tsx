@@ -69,7 +69,12 @@ export function CoverLetter({ resume, job, aiReady }: Props) {
       {error && <div className="error" style={{ marginTop: 10 }}>{error}</div>}
       {letter && (
         <>
-          <textarea className="letter" value={letter} onChange={(e) => setLetter(e.target.value)} />
+          <textarea
+            className="letter"
+            value={letter}
+            onChange={(e) => setLetter(e.target.value)}
+            rows={Math.max(14, Math.ceil(letter.length / 95) + letter.split("\n").length)}
+          />
           <div className="row" style={{ marginTop: 8 }}>
             <button className="ghost" onClick={copy}>{copied ? 'Copied ✓' : 'Copy'}</button>
             <button className="ghost" onClick={download}>Download .txt</button>

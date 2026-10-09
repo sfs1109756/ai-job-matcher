@@ -3,7 +3,8 @@ export function ScoreRing({ value, label, size = 120 }: { value: number; label: 
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const pct = Math.max(0, Math.min(100, value));
-  const color = pct >= 75 ? 'var(--good)' : pct >= 50 ? 'var(--warn)' : 'var(--bad)';
+  // Same bands as the verdict: 65+ good, 45–64 partial, below 45 weak.
+  const color = pct >= 65 ? 'var(--good)' : pct >= 45 ? 'var(--warn)' : 'var(--bad)';
   return (
     <div className="ring" style={{ width: size }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${label}: ${pct}%`}>
