@@ -16,7 +16,7 @@ Paste (or upload) your resume and a job description. Get a fit score, the skills
 - **Strengthen a bullet:** picks your weakest bullets (weak openers, no numbers) and rewrites one three ways. Missing numbers become placeholders like `[X%]` instead of invented facts.
 - **Cover letter writer:** streams as it's written; three tones, optional company name and notes ("open to relocating"), and a strict rule to only use facts from your resume.
 - **History:** your last 10 analyses are kept in the browser; one click restores any of them.
-- **PDF upload** for resumes and job posts (text extraction with `unpdf`).
+- **PDF and Word (.docx) upload** for resumes and job posts (`unpdf` and `mammoth`).
 - Remembers your resume in the browser between visits.
 - Works with **Ollama, any OpenAI-compatible API, or Claude** by changing one environment variable.
 

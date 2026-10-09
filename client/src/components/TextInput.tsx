@@ -34,8 +34,12 @@ export function TextInput({ title, value, onChange, placeholder }: Props) {
       <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
         <h2 style={{ margin: 0 }}>{title}</h2>
         <label className="file small">
-          {busy ? <span className="spinner" /> : '⇪'} Upload PDF / TXT
-          <input type="file" accept=".pdf,.txt,.md,application/pdf,text/plain" onChange={(e) => onFile(e.target.files?.[0])} />
+          {busy ? <span className="spinner" /> : '⇪'} Upload PDF / Word
+          <input
+            type="file"
+            accept=".pdf,.docx,.txt,.md,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            onChange={(e) => onFile(e.target.files?.[0])}
+          />
         </label>
       </div>
       <textarea value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
