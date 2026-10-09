@@ -20,12 +20,21 @@ const fakeOllama = http.createServer((req, res) => {
     }
     const content = system.includes('resume bullet')
       ? JSON.stringify({ rewrites: ['Built X', 'Led Y', 'Cut Z by [X%]'], tip: 'Lead with impact.' })
-      : JSON.stringify({ fitScore: 81, verdict: 'Strong match', summary: 'ok', strengths: ['a'], gaps: [], resumeTips: [], interviewQuestions: [] });
+      : JSON.stringify({
+          fitScore: 81,
+          verdict: 'Strong match',
+          summary: 'ok',
+          strengths: ['a'],
+          gaps: [],
+          resumeTips: [],
+          interviewQuestions: [],
+        });
     res.end(JSON.stringify({ message: { content } }));
   });
 });
 
-const listen = (s: http.Server) => new Promise<string>((r) => s.listen(0, () => r(`http://127.0.0.1:${(s.address() as AddressInfo).port}`)));
+const listen = (s: http.Server) =>
+  new Promise<string>((r) => s.listen(0, () => r(`http://127.0.0.1:${(s.address() as AddressInfo).port}`)));
 
 before(async () => {
   process.env.AI_RATE_LIMIT = '20';
@@ -78,8 +87,14 @@ test('cover letter streams NDJSON tokens, and fails cleanly without AI', async (
   process.env.LLM_PROVIDER = 'ollama';
   const res = await post('/api/cover-letter', { resume, job, tone: 'concise' });
   assert.match(res.headers.get('content-type') ?? '', /ndjson/);
-  const events = (await res.text()).trim().split('\n').map((l) => JSON.parse(l));
-  assert.deepEqual(events.filter((e) => e.type === 'token').map((e) => e.text), ['Dear ', 'Hiring ', 'Manager,']);
+  const events = (await res.text())
+    .trim()
+    .split('\n')
+    .map((l) => JSON.parse(l));
+  assert.deepEqual(
+    events.filter((e) => e.type === 'token').map((e) => e.text),
+    ['Dear ', 'Hiring ', 'Manager,'],
+  );
   assert.deepEqual(events.at(-1), { type: 'done', text: 'Dear Hiring Manager,' });
 
   process.env.LLM_PROVIDER = 'none';

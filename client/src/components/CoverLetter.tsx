@@ -68,18 +68,26 @@ export function CoverLetter({ resume, job, aiReady }: Props) {
         placeholder="Anything to mention? e.g. 'open to relocating to Dubai', 'notice period 30 days'"
       />
       {!aiReady && <p className="small muted">Needs an AI model. Start Ollama to enable this.</p>}
-      {error && <div className="error" style={{ marginTop: 10 }}>{error}</div>}
+      {error && (
+        <div className="error" style={{ marginTop: 10 }}>
+          {error}
+        </div>
+      )}
       {letter && (
         <>
           <textarea
             className="letter"
             value={letter}
             onChange={(e) => setLetter(e.target.value)}
-            rows={Math.max(12, Math.ceil(letter.length / 140) + letter.split("\n").length)}
+            rows={Math.max(12, Math.ceil(letter.length / 140) + letter.split('\n').length)}
           />
           <div className="row" style={{ marginTop: 8 }}>
-            <button className="ghost" onClick={copy}>{copied ? 'Copied ✓' : 'Copy'}</button>
-            <button className="ghost" onClick={download}>Download .txt</button>
+            <button className="ghost" onClick={copy}>
+              {copied ? 'Copied ✓' : 'Copy'}
+            </button>
+            <button className="ghost" onClick={download}>
+              Download .txt
+            </button>
           </div>
         </>
       )}

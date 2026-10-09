@@ -73,7 +73,9 @@ export default function App() {
           <p>See how your resume fits a job, what's missing, and get a tailored cover letter.</p>
         </div>
         <div className="row">
-          <button className="ghost" onClick={loadSample}>Load sample</button>
+          <button className="ghost" onClick={loadSample}>
+            Load sample
+          </button>
           <AiStatus health={health} />
         </div>
       </header>

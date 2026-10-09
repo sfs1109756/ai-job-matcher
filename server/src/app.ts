@@ -42,7 +42,10 @@ app.post(
     if (job.length < 50) throw new HttpError(400, 'Please add the job description (at least a few lines).');
 
     const keywords = keywordMatch(resume, job);
-    const ats = atsReport(resume, keywords.missing.map((s) => s.name));
+    const ats = atsReport(
+      resume,
+      keywords.missing.map((s) => s.name),
+    );
     const useAi = req.body?.useAi !== false;
     let ai = null;
     let aiError: string | null = null;

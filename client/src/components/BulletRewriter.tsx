@@ -39,7 +39,9 @@ export function BulletRewriter({ suggestions, job, aiReady }: Props) {
       <h2>✨ Strengthen a bullet</h2>
       {suggestions.length > 0 && (
         <>
-          <p className="small muted" style={{ marginTop: 0 }}>These bullets have a weak opener or no numbers. Pick one, or paste your own.</p>
+          <p className="small muted" style={{ marginTop: 0 }}>
+            These bullets have a weak opener or no numbers. Pick one, or paste your own.
+          </p>
           <div className="bullet-picks">
             {suggestions.map((s) => (
               <button key={s} className={`pick ${s === bullet ? 'active' : ''}`} onClick={() => setBullet(s)}>
@@ -56,7 +58,11 @@ export function BulletRewriter({ suggestions, job, aiReady }: Props) {
         </button>
       </div>
       {!aiReady && <p className="small muted">Needs an AI model.</p>}
-      {error && <div className="error" style={{ marginTop: 10 }}>{error}</div>}
+      {error && (
+        <div className="error" style={{ marginTop: 10 }}>
+          {error}
+        </div>
+      )}
       {result && (
         <div className="rewrites">
           {result.rewrites.map((r, i) => (

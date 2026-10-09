@@ -47,7 +47,11 @@ export function TextInput({ title, value, onChange, placeholder }: Props) {
           </button>
         )}
       </div>
-      {error && <div className="error" style={{ marginTop: 8 }}>{error}</div>}
+      {error && (
+        <div className="error" style={{ marginTop: 8 }}>
+          {error}
+        </div>
+      )}
     </div>
   );
 }

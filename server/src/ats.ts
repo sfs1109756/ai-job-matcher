@@ -27,7 +27,8 @@ const SECTIONS: Record<string, RegExp> = {
   Education: /^\s*(education|academic|qualifications)\b/im,
 };
 
-const WEAK_OPENERS = /^(responsible for|worked on|working on|helped|assisted|involved in|participated in|duties included|tasked with|handled|did|was part of)\b/i;
+const WEAK_OPENERS =
+  /^(responsible for|worked on|working on|helped|assisted|involved in|participated in|duties included|tasked with|handled|did|was part of)\b/i;
 const STRONG_VERBS =
   /^(built|led|designed|developed|shipped|launched|created|architected|owned|delivered|reduced|cut|improved|increased|grew|automated|migrated|optimized|optimised|implemented|scaled|mentored|drove|introduced|rebuilt|refactored|integrated|streamlined|spearheaded|established|engineered|deployed|accelerated|saved|won|managed|coordinated|wrote|authored|maintained|enabled|converted|transformed|negotiated|resolved|debugged)\b/i;
 
@@ -105,7 +106,12 @@ export function atsReport(resume: string, missingKeywords: string[] = []): AtsRe
   checks.push({
     id: 'verbs',
     label: 'Strong action verbs',
-    status: weakOpeners.length === 0 && (bullets.length === 0 || strongOpeners.length / bullets.length >= 0.5) ? 'pass' : weakOpeners.length > 2 ? 'fail' : 'warn',
+    status:
+      weakOpeners.length === 0 && (bullets.length === 0 || strongOpeners.length / bullets.length >= 0.5)
+        ? 'pass'
+        : weakOpeners.length > 2
+          ? 'fail'
+          : 'warn',
     detail: weakOpeners.length
       ? `${weakOpeners.length} bullet${weakOpeners.length > 1 ? 's start' : ' starts'} with weak phrases like "Responsible for" or "Worked on". Lead with what you did: Built, Led, Cut, Shipped.`
       : `${strongOpeners.length} of ${bullets.length} bullets open with a strong verb.`,
@@ -117,7 +123,10 @@ export function atsReport(resume: string, missingKeywords: string[] = []): AtsRe
     id: 'voice',
     label: 'Resume voice',
     status: firstPerson > 3 ? 'warn' : 'pass',
-    detail: firstPerson > 3 ? `Found "I/my/me" ${firstPerson} times. Resumes usually drop first-person pronouns.` : 'No first-person pronouns overload.',
+    detail:
+      firstPerson > 3
+        ? `Found "I/my/me" ${firstPerson} times. Resumes usually drop first-person pronouns.`
+        : 'No first-person pronouns overload.',
   });
 
   // Keywords for this job
@@ -129,16 +138,18 @@ export function atsReport(resume: string, missingKeywords: string[] = []): AtsRe
       detail: `The job mentions ${missingKeywords.slice(0, 8).join(', ')}${missingKeywords.length > 8 ? '…' : ''} but your resume doesn't. Add the ones you genuinely have.`,
     });
   } else {
-    checks.push({ id: 'keywords', label: 'Job keywords', status: 'pass', detail: 'Every skill detected in the job post appears in your resume.' });
+    checks.push({
+      id: 'keywords',
+      label: 'Job keywords',
+      status: 'pass',
+      detail: 'Every skill detected in the job post appears in your resume.',
+    });
   }
 
   const points: Record<CheckStatus, number> = { pass: 1, warn: 0.5, fail: 0 };
   const score = Math.round((checks.reduce((s, c) => s + points[c.status], 0) / checks.length) * 100);
 
-  const weakBullets = [
-    ...weakOpeners,
-    ...bullets.filter((b) => !weakOpeners.includes(b) && !/\d/.test(b)),
-  ].slice(0, 6);
+  const weakBullets = [...weakOpeners, ...bullets.filter((b) => !weakOpeners.includes(b) && !/\d/.test(b))].slice(0, 6);
 
   return { score, checks, stats: { words, bullets: bullets.length, quantifiedBullets: quantified.length }, weakBullets };
 }

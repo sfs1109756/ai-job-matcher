@@ -25,7 +25,11 @@ export function loadHistory(): HistoryItem[] {
 
 /** First non-empty line of the job post, trimmed — usually the role title. */
 export function jobTitle(job: string): string {
-  const line = job.split('\n').map((l) => l.trim()).find(Boolean) ?? 'Untitled job';
+  const line =
+    job
+      .split('\n')
+      .map((l) => l.trim())
+      .find(Boolean) ?? 'Untitled job';
   return line.length > 70 ? `${line.slice(0, 67)}…` : line;
 }
 

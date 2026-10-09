@@ -26,15 +26,17 @@ export function Results({ data }: { data: AnalyzeResponse }) {
             ) : (
               <>
                 <div className="verdict">Keyword analysis</div>
-                <p className="muted">
-                  {aiError ? `${aiError} Showing the rule-based skill match only.` : 'AI analysis was skipped.'}
-                </p>
+                <p className="muted">{aiError ? `${aiError} Showing the rule-based skill match only.` : 'AI analysis was skipped.'}</p>
               </>
             )}
             <p className="small muted">
               Matched {keywords.matched.length} of {keywords.matched.length + keywords.missing.length} skills detected in the job post.
               {keywords.jobYears ? ` Job asks for ${keywords.jobYears}+ years` : ''}
-              {keywords.jobYears && keywords.resumeYears !== null ? `; resume shows ${keywords.resumeYears}.` : keywords.jobYears ? '.' : ''}
+              {keywords.jobYears && keywords.resumeYears !== null
+                ? `; resume shows ${keywords.resumeYears}.`
+                : keywords.jobYears
+                  ? '.'
+                  : ''}
               {yearsGap ? ' ⚠ Experience may be below the requirement.' : ''}
             </p>
           </div>
@@ -49,7 +51,9 @@ export function Results({ data }: { data: AnalyzeResponse }) {
               <div key={cat}>
                 <div className="cat">{cat}</div>
                 {skills.map((s) => (
-                  <span key={s.name} className="chip good">{s.name}</span>
+                  <span key={s.name} className="chip good">
+                    {s.name}
+                  </span>
                 ))}
               </div>
             ))
@@ -64,7 +68,9 @@ export function Results({ data }: { data: AnalyzeResponse }) {
               <div key={cat}>
                 <div className="cat">{cat}</div>
                 {skills.map((s) => (
-                  <span key={s.name} className="chip bad">{s.name}</span>
+                  <span key={s.name} className="chip bad">
+                    {s.name}
+                  </span>
                 ))}
               </div>
             ))
@@ -75,7 +81,9 @@ export function Results({ data }: { data: AnalyzeResponse }) {
             <>
               <h3>Your other skills</h3>
               {keywords.extra.map((s) => (
-                <span key={s.name} className="chip">{s.name}</span>
+                <span key={s.name} className="chip">
+                  {s.name}
+                </span>
               ))}
             </>
           )}
@@ -87,7 +95,11 @@ export function Results({ data }: { data: AnalyzeResponse }) {
           <div className="grid2">
             <div className="panel">
               <h2>💪 Strengths for this role</h2>
-              <ul className="clean">{ai.strengths.map((s, i) => <li key={i}>{s}</li>)}</ul>
+              <ul className="clean">
+                {ai.strengths.map((s, i) => (
+                  <li key={i}>{s}</li>
+                ))}
+              </ul>
             </div>
             <div className="panel">
               <h2>🧩 Gaps and how to close them</h2>
@@ -109,11 +121,19 @@ export function Results({ data }: { data: AnalyzeResponse }) {
           <div className="grid2">
             <div className="panel">
               <h2>✍️ Resume tweaks for this job</h2>
-              <ul className="clean">{ai.resumeTips.map((s, i) => <li key={i}>{s}</li>)}</ul>
+              <ul className="clean">
+                {ai.resumeTips.map((s, i) => (
+                  <li key={i}>{s}</li>
+                ))}
+              </ul>
             </div>
             <div className="panel">
               <h2>🎤 Interview prep</h2>
-              <ul className="clean">{ai.interviewQuestions.map((s, i) => <li key={i}>{s}</li>)}</ul>
+              <ul className="clean">
+                {ai.interviewQuestions.map((s, i) => (
+                  <li key={i}>{s}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </>

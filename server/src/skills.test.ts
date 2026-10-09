@@ -10,7 +10,10 @@ test('matches skills with symbols and aliases', () => {
 });
 
 test('does not confuse React with React Native or Java with JavaScript', () => {
-  assert.deepEqual(names('React Native developer').filter((n) => n.startsWith('React')), ['React Native']);
+  assert.deepEqual(
+    names('React Native developer').filter((n) => n.startsWith('React')),
+    ['React Native'],
+  );
   assert.ok(!names('JavaScript expert').includes('Java'));
 });
 
@@ -29,5 +32,8 @@ test('extracts years of experience', () => {
 test('keyword match scores coverage', () => {
   const m = keywordMatch('React, TypeScript, PostgreSQL', 'We need React, TypeScript, Docker and PostgreSQL');
   assert.equal(m.score, 75);
-  assert.deepEqual(m.missing.map((s) => s.name), ['Docker']);
+  assert.deepEqual(
+    m.missing.map((s) => s.name),
+    ['Docker'],
+  );
 });

@@ -52,7 +52,12 @@ export async function analyzeWithAI(resume: string, job: string, keywords: Keywo
 }
 
 function strArr(v: unknown, max = 8): string[] {
-  return Array.isArray(v) ? v.filter((x) => typeof x === 'string' && x.trim()).map((x) => x.trim()).slice(0, max) : [];
+  return Array.isArray(v)
+    ? v
+        .filter((x) => typeof x === 'string' && x.trim())
+        .map((x) => x.trim())
+        .slice(0, max)
+    : [];
 }
 
 function normalize(raw: Partial<AiAnalysis>): AiAnalysis {
@@ -158,7 +163,10 @@ Return JSON: {"rewrites": ["...", "...", "..."], "tip": "one short sentence of a
     { temperature: 0.5 },
   );
   const rewrites = Array.isArray(raw.rewrites)
-    ? raw.rewrites.filter((r): r is string => typeof r === 'string' && r.trim().length > 0).map((r) => r.trim().replace(/^[-•*]\s*/, '')).slice(0, 3)
+    ? raw.rewrites
+        .filter((r): r is string => typeof r === 'string' && r.trim().length > 0)
+        .map((r) => r.trim().replace(/^[-•*]\s*/, ''))
+        .slice(0, 3)
     : [];
   if (rewrites.length === 0) throw new Error('The model did not return any rewrites. Try again.');
   return { rewrites, tip: typeof raw.tip === 'string' ? raw.tip.trim() : '' };

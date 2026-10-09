@@ -11,7 +11,7 @@ Paste (or upload) your resume and a job description. Get a fit score, the skills
 ## Features
 
 - **Rule-based skill match (no AI):** 150+ skills with aliases (`ReactJS` → React, `k8s` → Kubernetes, `C#`, `.NET`, `Node.js`…), grouped by category, plus years-of-experience detection.
-- **AI fit analysis:** fit score and verdict, strengths, gaps marked *must-have* / *nice-to-have* with how to close each, resume edits for this specific job, and interview prep questions.
+- **AI fit analysis:** fit score and verdict, strengths, gaps marked _must-have_ / _nice-to-have_ with how to close each, resume edits for this specific job, and interview prep questions.
 - **Resume health check (no AI):** a score plus seven checks — contact details, length, standard sections, measurable impact, action verbs, first-person voice and job keywords.
 - **Strengthen a bullet:** picks your weakest bullets (weak openers, no numbers) and rewrites one three ways. Missing numbers become placeholders like `[X%]` instead of invented facts.
 - **Cover letter writer:** streams as it's written; three tones, optional company name and notes ("open to relocating"), and a strict rule to only use facts from your resume.
@@ -69,24 +69,24 @@ docker compose up -d && docker compose exec ollama ollama pull qwen2.5:7b
 
 Copy `server/.env.example` to `server/.env` and set:
 
-| Provider | Settings |
-|---|---|
-| Ollama (default) | `LLM_PROVIDER=ollama`, `LLM_MODEL=qwen2.5:7b` |
+| Provider                         | Settings                                                                            |
+| -------------------------------- | ----------------------------------------------------------------------------------- |
+| Ollama (default)                 | `LLM_PROVIDER=ollama`, `LLM_MODEL=qwen2.5:7b`                                       |
 | LM Studio / vLLM / Groq / OpenAI | `LLM_PROVIDER=openai`, `OPENAI_BASE_URL=...`, `OPENAI_API_KEY=...`, `LLM_MODEL=...` |
-| Claude | `LLM_PROVIDER=anthropic`, `ANTHROPIC_API_KEY=...` |
-| No AI | `LLM_PROVIDER=none` (skill match only) |
+| Claude                           | `LLM_PROVIDER=anthropic`, `ANTHROPIC_API_KEY=...`                                   |
+| No AI                            | `LLM_PROVIDER=none` (skill match only)                                              |
 
 All providers go through one small adapter (`server/src/llm.ts`) that uses plain `fetch` — no vendor SDKs.
 
 ## API
 
-| Method | Path | Body | Notes |
-|---|---|---|---|
-| `GET` | `/api/health` | – | Which model is active and whether it's reachable |
-| `POST` | `/api/extract` | `multipart file` | PDF/TXT/MD → text |
-| `POST` | `/api/analyze` | `{ resume, job, useAi? }` | `{ keywords, ats, ai, aiError }` |
-| `POST` | `/api/cover-letter` | `{ resume, job, tone, company?, notes? }` | NDJSON stream of `token` events, then `done` |
-| `POST` | `/api/rewrite-bullet` | `{ bullet, job? }` | `{ rewrites[3], tip }` |
+| Method | Path                  | Body                                      | Notes                                            |
+| ------ | --------------------- | ----------------------------------------- | ------------------------------------------------ |
+| `GET`  | `/api/health`         | –                                         | Which model is active and whether it's reachable |
+| `POST` | `/api/extract`        | `multipart file`                          | PDF/TXT/MD → text                                |
+| `POST` | `/api/analyze`        | `{ resume, job, useAi? }`                 | `{ keywords, ats, ai, aiError }`                 |
+| `POST` | `/api/cover-letter`   | `{ resume, job, tone, company?, notes? }` | NDJSON stream of `token` events, then `done`     |
+| `POST` | `/api/rewrite-bullet` | `{ bullet, job? }`                        | `{ rewrites[3], tip }`                           |
 
 AI routes are rate limited (`AI_RATE_LIMIT`, default 30/min per IP). If no model is available they return `503` with `aiUnavailable: true`, so the UI can fall back gracefully.
 
