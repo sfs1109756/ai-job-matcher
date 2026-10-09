@@ -65,6 +65,8 @@ npm run build && npm start      # serves the UI and API on http://localhost:3001
 docker compose up -d && docker compose exec ollama ollama pull qwen2.5:7b
 ```
 
+The server listens on `127.0.0.1` by default, so only this computer can reach it. Set `HOST=0.0.0.0` in `server/.env` to open it to your network (the Docker image does this for you).
+
 ## Switching AI provider
 
 Copy `server/.env.example` to `server/.env` and set:
